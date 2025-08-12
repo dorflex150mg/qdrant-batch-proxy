@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  upstream:
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-latest
+    pull_policy: always
+    command: ["--model-id", "nomic-ai/nomic-embed-text-v1.5"]
+    ports:
+      - "8080:80"
+    deploy:
+      resources:
+        limits:
+          memory: 10g
+          cpus: "3"
+
+  proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - RUST_LOG=debug
+    ports:
+      - "3000:3000"
+    depends_on:
+      - upstream
