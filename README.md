@@ -42,13 +42,21 @@
      --model-id nomic-ai/nomic-embed-text-v1.5
  ```
 
+
+
  Then start this proxy server:
 
  ```bash
  cargo run
  ```
 
- Make a request:
+ Or spawn both with docker-compose:
+
+```bash
+docker-compose up
+```
+
+ Once the services are available make a request:
 
  ```bash
  curl 127.0.0.1:3000/embed \
@@ -56,11 +64,30 @@
    -d '{"inputs":"Hello world"}'
  ```
 
-Or make multiple requests:
+Or make 100 requests in sequence:
+
+```bash
+bash generate_single_requests.sh
+```
+
+Or in bulk:
 
 ```bash
 bash generate_bulk_requests.sh
 ```
+
+The `generate_single_requests.sh` and `generate_bulk_requests.sh` scripts will produce a the `partials_single.csv` and `partials_bulk.csv` files, containing the latency for each request. `finals_single.csv` represents the total elapsed time for the sequential execution. `absolutes_bulk.csv` collects the start timestamp and end timestamps for each request. The information is later used to determine the elapsed time for the batch execution.
+
+ ## Benchmarking
+
+ We generate a density distribution for sequential and batch execution by running `plot_density.R` and a bar plot of the elapsed times by running `latency.R`. 
+
+```R
+Rscript plot_density.R
+```
+
+These scripts must be run **after** running `generate_single_requests.sh` and `generate_bulk_requests.sh`. The generate the plots in `partials_density_seconds.png` and `elapsed_millis.png` respectively.
+
                               
  ## Logging                   
                               
